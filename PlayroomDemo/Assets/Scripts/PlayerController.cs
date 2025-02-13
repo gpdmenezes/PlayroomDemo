@@ -38,21 +38,31 @@ namespace PlayroomDemo
             {
                 if (hit.collider.CompareTag("Piece"))
                 {
-                    if (selectedPiece != null) DeselectPiece();
-                    selectedPiece = hit.transform.GetComponent<BoardPiece>();
-                    selectedPiece.OnPieceInteraction(true);
+                    OnPieceSelection(hit);
                     return;
                 }
 
                 if (hit.collider.CompareTag("Position"))
                 {
-                    if (selectedPiece == null) return;
-                    BoardPosition boardPosition = hit.transform.GetComponent<BoardPosition>();
-                    if (boardPosition.IsOccupied() || !selectedPiece.IsBoardPositionValid(boardPosition)) return;
-                    selectedPiece.SetBoardPosition(boardPosition);
-                    DeselectPiece();
+                    OnPositionSelection(hit);
                 }
             }
+        }
+
+        private void OnPieceSelection (RaycastHit hit)
+        {
+            if (selectedPiece != null) DeselectPiece();
+            selectedPiece = hit.transform.GetComponent<BoardPiece>();
+            selectedPiece.OnPieceInteraction(true);
+        }
+
+        private void OnPositionSelection (RaycastHit hit)
+        {
+            if (selectedPiece == null) return;
+            BoardPosition boardPosition = hit.transform.GetComponent<BoardPosition>();
+            if (boardPosition.IsOccupied() || !selectedPiece.IsBoardPositionValid(boardPosition)) return;
+            selectedPiece.SetBoardPosition(boardPosition);
+            DeselectPiece();
         }
     }
 }
