@@ -25,23 +25,20 @@ namespace PlayroomDemo
         {
             foreach (BoardPosition boardPosition in boardPositions)
             {
-                boardPosition.SetOccupation(false);
-                boardPosition.ShouldEnableOccupationMarker(false);
+                boardPosition.ResetPosition();
             }
         }
 
         private void ResetBoardPieces ()
         {
-            jaguarPiece.SetCurrentBoardPosition(boardPositions[0]);
-            jaguarPiece.transform.position = boardPositions[0].transform.position;
-            boardPositions[0].SetOccupation(true);
+            jaguarPiece.ResetPiece();
+            jaguarPiece.SetBoardPosition(boardPositions[0]);
 
             int dogPieceCounter = dogPieceBoardStart;
             foreach (BoardPiece dogPiece in dogPieces)
             {
-                dogPiece.SetCurrentBoardPosition(boardPositions[dogPieceCounter]);
-                dogPiece.transform.position = boardPositions[dogPieceCounter].transform.position;
-                boardPositions[dogPieceCounter].SetOccupation(true);
+                dogPiece.ResetPiece();
+                dogPiece.SetBoardPosition(boardPositions[dogPieceCounter]);
                 dogPieceCounter++;
             }
         }

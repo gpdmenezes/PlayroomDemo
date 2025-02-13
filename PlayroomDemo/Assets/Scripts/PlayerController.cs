@@ -16,7 +16,7 @@ namespace PlayroomDemo
 
             if (Input.GetMouseButtonDown(0))
             {
-                SelectPiece();
+                CheckMouseRaycast();
             }
         }
 
@@ -29,7 +29,7 @@ namespace PlayroomDemo
             }
         }
 
-        private void SelectPiece ()
+        private void CheckMouseRaycast ()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -38,8 +38,19 @@ namespace PlayroomDemo
             {
                 if (hit.collider.CompareTag("Piece"))
                 {
+                    if (selectedPiece != null) DeselectPiece();
                     selectedPiece = hit.transform.GetComponent<BoardPiece>();
                     selectedPiece.OnPieceInteraction(true);
+                    return;
+                }
+
+                if (hit.collider.CompareTag("Position"))
+                {
+                    if (selectedPiece == null) return;
+                    BoardPosition boardPosition = hit.transform.GetComponent<BoardPosition>();
+                    if (boardPosition.IsOccupied() || !selectedPiece.IsBoardPositionValid(boardPosition)) return;
+                    selectedPiece.SetBoardPosition(boardPosition);
+                    DeselectPiece();
                 }
             }
         }

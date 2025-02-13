@@ -1,3 +1,4 @@
+using NSubstitute.Core;
 using UnityEngine;
 
 namespace PlayroomDemo
@@ -17,15 +18,28 @@ namespace PlayroomDemo
             selectionMarker.SetActive(false);
         }
 
-        public void SetCurrentBoardPosition (BoardPosition boardPosition)
+        public void SetBoardPosition (BoardPosition boardPosition)
         {
+            if (currentPosition != null) currentPosition.ResetPosition();
             this.currentPosition = boardPosition;
+            currentPosition.SetOccupation(true);
+            MoveToCurrentPosition();
+        }
+
+        private void MoveToCurrentPosition ()
+        {
+            transform.position = currentPosition.transform.position;
         }
 
         public void OnPieceInteraction (bool isSelection)
         {
             selectionMarker.SetActive(isSelection);
             currentPosition.ShouldMarkAvailableNeighbors(isSelection);
+        }
+
+        public bool IsBoardPositionValid (BoardPosition boardPosition)
+        {
+            return currentPosition.IsNeighborPosition(boardPosition);
         }
     }
 }

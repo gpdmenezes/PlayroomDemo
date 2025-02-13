@@ -15,7 +15,8 @@ namespace PlayroomDemo
         public void ResetPosition ()
         {
             isOccupied = false;
-            occupationMarker.SetActive(false);
+            ShouldEnableOccupationMarker(false);
+            ShouldMarkAvailableNeighbors(false);
         }
 
         public void ShouldMarkAvailableNeighbors (bool shouldMark)
@@ -30,6 +31,15 @@ namespace PlayroomDemo
         public void ShouldEnableOccupationMarker (bool shouldEnable)
         {
             occupationMarker.SetActive(shouldEnable);
+        }
+
+        public bool IsNeighborPosition (BoardPosition boardPosition)
+        {
+            for (int i = 0; i < neighborPositions.Length; i++)
+            {
+                if (neighborPositions[i] == boardPosition) return true;
+            }
+            return false;
         }
     }
 }
