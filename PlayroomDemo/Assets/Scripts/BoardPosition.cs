@@ -1,18 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardPosition : MonoBehaviour
+namespace PlayroomDemo
 {
-    // Start is called before the first frame update
-    void Start()
+    public class BoardPosition : MonoBehaviour
     {
-        
-    }
+        [SerializeField] private BoardPosition[] neighborPositions;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private bool isOccupied = false;
     }
 }

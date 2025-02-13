@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class PieceController : MonoBehaviour
+namespace PlayroomDemo
 {
-    [SerializeField] private bool isJaguar = false;
+    public class PieceController : MonoBehaviour
+    {
+        [SerializeField] private bool isJaguar = false;
+    }
 }
