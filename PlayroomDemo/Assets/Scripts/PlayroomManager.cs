@@ -38,8 +38,8 @@ namespace PlayroomDemo
                 var myPlayer = _playroomKit.MyPlayer();
                 var index = players.IndexOf(myPlayer);
 
-                playerGameObjects[index].GetComponent<PlayerController>().Move();
-                playerGameObjects[index].GetComponent<PlayerController>().Jump();
+                //playerGameObjects[index].GetComponent<PlayerController>().Move();
+                //playerGameObjects[index].GetComponent<PlayerController>().Jump();
 
                 players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
                 players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);

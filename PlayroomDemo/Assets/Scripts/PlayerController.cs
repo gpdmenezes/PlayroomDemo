@@ -4,36 +4,44 @@ namespace PlayroomDemo
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] float moveSpeed = 5f;
-        [SerializeField] private float jumpAmount = 15f;
+        private BoardPiece selectedPiece = null;
 
-        [SerializeField] private Rigidbody2D rb2D;
-        [SerializeField] private bool isJumping;
-
-        public float dirX;
-
-        public void Move()
+        private void Update ()
         {
-            dirX = Input.GetAxisRaw("Horizontal");
-            transform.Translate(new Vector3(dirX, 0, 0) * (moveSpeed * Time.deltaTime));
-        }
-
-        public void Jump()
-        {
-            if (Input.GetButton("Jump") && isJumping)
+            if (Input.GetMouseButtonDown(1))
             {
-                rb2D.AddForce(transform.up * jumpAmount, ForceMode2D.Impulse);
-                isJumping = false;
+                DeselectPiece();
+                return;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                SelectPiece();
             }
         }
 
-        private void OnCollisionEnter2D(Collision2D collision)
+        private void DeselectPiece ()
         {
-            if (collision.gameObject.CompareTag("Ground"))
+            if (selectedPiece)
             {
-                isJumping = true;
+                selectedPiece.OnPieceInteraction(false);
+                selectedPiece = null;
+            }
+        }
+
+        private void SelectPiece ()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.collider.CompareTag("Piece"))
+                {
+                    selectedPiece = hit.transform.GetComponent<BoardPiece>();
+                    selectedPiece.OnPieceInteraction(true);
+                }
             }
         }
     }
-
 }
