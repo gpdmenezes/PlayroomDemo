@@ -15,7 +15,7 @@ namespace PlayroomDemo
         private void Awake ()
         {
             Instance = this;
-            ResetBoard();
+            //ResetBoard();
         }
 
         public void ResetBoard ()

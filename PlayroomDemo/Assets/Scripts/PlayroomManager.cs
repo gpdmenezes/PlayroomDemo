@@ -4,6 +4,7 @@ using Playroom;
 using AOT;
 using System;
 using Random = UnityEngine.Random;
+using static Playroom.PlayroomKit;
 
 namespace PlayroomDemo
 {
@@ -13,10 +14,7 @@ namespace PlayroomDemo
 
         private PlayroomKit _playroomKit = new();
         private static readonly List<PlayroomKit.Player> currentPlayers = new();
-
-
-        private static readonly List<PlayroomKit.Player> players = new();
-        private static readonly List<GameObject> playerGameObjects = new();
+        private bool hasMatchStarted = false;
 
         private void Start()
         {
@@ -26,7 +24,8 @@ namespace PlayroomDemo
                 skipLobby = false,
                 maxPlayersPerRoom = 2,
                 defaultPlayerStates = new() {
-                    {"score", 0},
+                    {"jaguarPlayer", "none"},
+                    {"playerTurn", "none"},
             },
             }, () => {
                 _playroomKit.OnPlayerJoin(AddPlayer);
@@ -38,28 +37,39 @@ namespace PlayroomDemo
             if (playerJoined)
             {
                 var myPlayer = _playroomKit.MyPlayer();
-                var index = players.IndexOf(myPlayer);
-
-                //playerGameObjects[index].GetComponent<PlayerController>().Move();
-                //playerGameObjects[index].GetComponent<PlayerController>().Jump();
-
-                //players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
-                //players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
+                var index = currentPlayers.IndexOf(myPlayer);
             }
 
-            /*
-            for (var i = 0; i < players.Count; i++)
+            if (!hasMatchStarted && currentPlayers.Count >= 2)
             {
-                if (players[i] != null)
-                {
-                    var posX = players[i].GetState<float>("posX");
-                    var posY = players[i].GetState<float>("posY");
-                    Vector3 newPos = new Vector3(posX, posY, 0);
-
-                    if (playerGameObjects != null) playerGameObjects[i].GetComponent<Transform>().position = newPos;
-                }
+                hasMatchStarted = true;
+                StartMatch();
             }
-            */
+        }
+
+        public void StartMatch ()
+        {
+            Debug.Log("Starting Match!");
+            BoardManager.Instance.ResetBoard();
+            if (!_playroomKit.IsHost()) return;
+            SelectRandomJaguarPlayer();
+        }
+
+        private void SelectRandomJaguarPlayer()
+        {
+            int randomJaguarSelection = Random.Range(0, 2);
+            if (randomJaguarSelection == 0)
+            {
+                _playroomKit.SetState("jaguarPlayer", "player1", true);
+                InterfaceManager.Instance.SetJaguarPlayerName(currentPlayers[0].GetProfile().name);
+                InterfaceManager.Instance.SetDogPlayerName(currentPlayers[1].GetProfile().name);
+            }
+            else
+            {
+                _playroomKit.SetState("jaguarPlayer", "player2", true);
+                InterfaceManager.Instance.SetJaguarPlayerName(currentPlayers[1].GetProfile().name);
+                InterfaceManager.Instance.SetDogPlayerName(currentPlayers[0].GetProfile().name);
+            }
         }
 
         public static void AddPlayer(PlayroomKit.Player player)
