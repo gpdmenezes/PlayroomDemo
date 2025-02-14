@@ -60,9 +60,11 @@ namespace PlayroomDemo
         {
             if (selectedPiece == null) return;
             BoardPosition boardPosition = hit.transform.GetComponent<BoardPosition>();
-            if (boardPosition.IsOccupied() || !selectedPiece.IsBoardPositionValid(boardPosition)) return;
-            selectedPiece.SetBoardPosition(boardPosition);
+            if (boardPosition.IsOccupied() || !selectedPiece.IsBoardPositionValidForMove(boardPosition)) return;
+            BoardPiece oldPiece = selectedPiece;
             DeselectPiece();
+            oldPiece.SetBoardPosition(boardPosition);
+            //DeselectPiece();
         }
     }
 }

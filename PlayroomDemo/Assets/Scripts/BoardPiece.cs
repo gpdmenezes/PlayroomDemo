@@ -1,4 +1,3 @@
-using NSubstitute.Core;
 using UnityEngine;
 
 namespace PlayroomDemo
@@ -35,9 +34,10 @@ namespace PlayroomDemo
         {
             selectionMarker.SetActive(isSelection);
             currentPosition.ShouldMarkAvailableNeighbors(isSelection);
+            if (isJaguar) currentPosition.ShouldMarkAvailableJumps(isSelection);
         }
 
-        public bool IsBoardPositionValid (BoardPosition boardPosition)
+        public bool IsBoardPositionValidForMove (BoardPosition boardPosition)
         {
             return currentPosition.IsNeighborPosition(boardPosition);
         }
