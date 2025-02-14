@@ -5,15 +5,23 @@ namespace PlayroomDemo
     public class BoardPiece : MonoBehaviour
     {
         [SerializeField] private bool isJaguar = false;
+        [SerializeField] private BoxCollider boxCollider = null;
+        [SerializeField] private GameObject model = null;
         [SerializeField] private GameObject selectionMarker = null;
 
-        private bool isDead = false;
+        private bool hasBeenJumped = false;
         private BoardPosition currentPosition = null;
+
+        public bool IsJaguar () { return isJaguar; }
+        public bool HasBeenJumped () { return hasBeenJumped; }
+        public BoardPosition GetBoardPosition() { return currentPosition; }
 
         public void ResetPiece ()
         {
-            isDead = false;
+            hasBeenJumped = false;
             currentPosition = null;
+            boxCollider.enabled = true;
+            model.SetActive(true);
             selectionMarker.SetActive(false);
         }
 
@@ -40,6 +48,25 @@ namespace PlayroomDemo
         public bool IsBoardPositionValidForMove (BoardPosition boardPosition)
         {
             return currentPosition.IsNeighborPosition(boardPosition);
+        }
+
+        public bool IsBoardPositionValidForJump (BoardPosition boardPosition)
+        {
+            return currentPosition.IsJumpPosition(boardPosition);
+        }
+
+        public void RemoveJumpedPiece (BoardPosition boardPosition)
+        {
+            BoardPiece jumpedPiece = currentPosition.GetJumpedPiece(boardPosition);
+            jumpedPiece.OnPieceJumped();
+        }
+
+        public void OnPieceJumped ()
+        {
+            hasBeenJumped = true;
+            boxCollider.enabled = false;
+            model.SetActive(false);
+            currentPosition.ResetPosition();
         }
     }
 }

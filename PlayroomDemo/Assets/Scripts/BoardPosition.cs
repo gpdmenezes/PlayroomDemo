@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PlayroomDemo
@@ -31,7 +32,7 @@ namespace PlayroomDemo
             }
         }
 
-        public void ShouldEnableOccupationMarker (bool shouldEnable)
+        private void ShouldEnableOccupationMarker (bool shouldEnable)
         {
             occupationMarker.SetActive(shouldEnable);
         }
@@ -47,14 +48,41 @@ namespace PlayroomDemo
 
         public void ShouldMarkAvailableJumps (bool shouldMark)
         {
+            List<BoardPosition> availableJumps = ListAllAvailableJumps();
+            foreach (BoardPosition boardPosition in availableJumps)
+            {
+                boardPosition.ShouldEnableOccupationMarker(shouldMark);
+            }
+        }
+
+        public bool IsJumpPosition (BoardPosition boardPosition)
+        {
+            List<BoardPosition> availableJumps = ListAllAvailableJumps();
+            if (availableJumps.Contains(boardPosition)) return true;
+            return false;
+        }
+
+        private List<BoardPosition> ListAllAvailableJumps ()
+        {
+            List<BoardPosition> availableJumps = new List<BoardPosition>();
             foreach (BoardPosition boardPosition in neighborPositions)
             {
                 if (!boardPosition.IsOccupied()) continue;
                 Vector2 coordinatesDifference = (boardPosition.GetCoordinates() - GetCoordinates()) * 2;
                 Vector2 coordinatesToCheck = GetCoordinates() + coordinatesDifference;
                 BoardPosition positionToCheck = BoardManager.Instance.GetBoardPositionByCoordinate(coordinatesToCheck);
-                if (positionToCheck != null && !positionToCheck.IsOccupied()) positionToCheck.ShouldEnableOccupationMarker(shouldMark);
+                if (positionToCheck != null && !positionToCheck.IsOccupied()) availableJumps.Add(positionToCheck);
             }
+            return availableJumps;
+        }
+
+        public BoardPiece GetJumpedPiece (BoardPosition givenPosition)
+        {
+            Vector2 givenCoordinates = givenPosition.GetCoordinates();
+            Vector2 coordinatesToCheck = (givenCoordinates - GetCoordinates()) / 2;
+            Vector2 finalCoordinates = GetCoordinates() + coordinatesToCheck;
+            BoardPosition position = BoardManager.Instance.GetBoardPositionByCoordinate(finalCoordinates);
+            return BoardManager.Instance.GetBoardPieceByPosition(position);
         }
     }
 }

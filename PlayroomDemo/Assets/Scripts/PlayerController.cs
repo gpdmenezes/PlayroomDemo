@@ -60,11 +60,27 @@ namespace PlayroomDemo
         {
             if (selectedPiece == null) return;
             BoardPosition boardPosition = hit.transform.GetComponent<BoardPosition>();
-            if (boardPosition.IsOccupied() || !selectedPiece.IsBoardPositionValidForMove(boardPosition)) return;
+            if (boardPosition.IsOccupied()) return;
+
+            if (selectedPiece.IsJaguar() && selectedPiece.IsBoardPositionValidForJump(boardPosition))
+            {
+                selectedPiece.RemoveJumpedPiece(boardPosition);
+                ApplyPositionMove(boardPosition);
+                return;
+            }
+
+            if (selectedPiece.IsBoardPositionValidForMove(boardPosition))
+            {
+                ApplyPositionMove(boardPosition);
+                return;
+            }
+        }
+
+        private void ApplyPositionMove (BoardPosition boardPosition)
+        {
             BoardPiece oldPiece = selectedPiece;
             DeselectPiece();
             oldPiece.SetBoardPosition(boardPosition);
-            //DeselectPiece();
         }
     }
 }

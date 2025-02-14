@@ -53,7 +53,16 @@ namespace PlayroomDemo
                 Vector2 coordinates = boardPosition.GetCoordinates();
                 if (coordinates.x == givenCoordinates.x && coordinates.y == givenCoordinates.y) return boardPosition;
             }
+            return null;
+        }
 
+        public BoardPiece GetBoardPieceByPosition (BoardPosition boardPosition)
+        {
+            foreach (BoardPiece boardPiece in dogPieces)
+            {
+                if (boardPiece.HasBeenJumped()) continue;
+                if (boardPiece.GetBoardPosition() == boardPosition) return boardPiece;
+            }
             return null;
         }
     }
