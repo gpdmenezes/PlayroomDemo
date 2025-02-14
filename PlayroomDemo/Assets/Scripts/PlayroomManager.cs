@@ -12,9 +12,11 @@ namespace PlayroomDemo
         [SerializeField] private static bool playerJoined;
 
         private PlayroomKit _playroomKit = new();
+        private static readonly List<PlayroomKit.Player> currentPlayers = new();
+
+
         private static readonly List<PlayroomKit.Player> players = new();
         private static readonly List<GameObject> playerGameObjects = new();
-        private static Dictionary<string, GameObject> PlayerDict = new();
 
         private void Start()
         {
@@ -41,10 +43,11 @@ namespace PlayroomDemo
                 //playerGameObjects[index].GetComponent<PlayerController>().Move();
                 //playerGameObjects[index].GetComponent<PlayerController>().Jump();
 
-                players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
-                players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
+                //players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
+                //players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
             }
 
+            /*
             for (var i = 0; i < players.Count; i++)
             {
                 if (players[i] != null)
@@ -53,40 +56,24 @@ namespace PlayroomDemo
                     var posY = players[i].GetState<float>("posY");
                     Vector3 newPos = new Vector3(posX, posY, 0);
 
-                    if (playerGameObjects != null)
-                        playerGameObjects[i].GetComponent<Transform>().position = newPos;
+                    if (playerGameObjects != null) playerGameObjects[i].GetComponent<Transform>().position = newPos;
                 }
             }
+            */
         }
 
         public static void AddPlayer(PlayroomKit.Player player)
         {
-            GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"), new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
-
-            playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
-            Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " + player.id);
-
-            PlayerDict.Add(player.id, playerObj);
-            players.Add(player);
-            playerGameObjects.Add(playerObj);
-
+            currentPlayers.Add(player);
+            Debug.Log(player.GetProfile().name + " joined the game! (PlayerID: " + player.id + ")");
             playerJoined = true;
-
             player.OnQuit(RemovePlayer);
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void RemovePlayer(string playerID)
         {
-            if (PlayerDict.TryGetValue(playerID, out GameObject player))
-            {
-                Destroy(player);
-            }
-            else
-            {
-                Debug.LogWarning("Player not in dictionary!");
-            }
-
+            Debug.Log("PlayerID " + playerID + " left the game.");
         }
     }
 
