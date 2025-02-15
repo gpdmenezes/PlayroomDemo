@@ -52,12 +52,6 @@ namespace PlayroomDemo
                 string receivedValue = playroomKit.GetState<string>("jaguarPlayer");
                 OnJaguarPlayerChosen(receivedValue);
             });
-
-            playroomKit.WaitForState("playerTurn", (value) =>
-            {
-                string receivedValue = playroomKit.GetState<string>("playerTurn");
-                OnPlayerTurnUpdate(receivedValue);
-            });
         }
 
         private void Update ()
@@ -68,11 +62,19 @@ namespace PlayroomDemo
                 hasMatchStarted = true;
                 StartMatch();
             }
+
+            if (!hasMatchStarted) return;
+            string playerTurn = playroomKit.GetState<string>("playerTurn");
+            if (this.playerTurn != playerTurn)
+            {
+                this.playerTurn = playerTurn;
+                OnPlayerTurnUpdate(playerTurn);
+            }
         }
 
         public void StartMatch ()
         {
-            Debug.Log("Starting Match!");
+            Debug.Log("Starting Match...");
             BoardManager.Instance.ResetBoard();
             SetPlayerRoles();
         }
@@ -81,12 +83,10 @@ namespace PlayroomDemo
         {
             if (playroomKit.IsHost())
             {
-                Debug.Log(playroomKit.MyPlayer().GetProfile().name + " IS HOST AND PLAYER1");
                 playerRole = "player1";
             }
             else
             {
-                Debug.Log(playroomKit.MyPlayer().GetProfile().name + " IS CLIENT AND PLAYER2");
                 playerRole = "player2";
                 playroomKit.SetState("isPlayer2Ready", "true", true);
             }
@@ -94,7 +94,7 @@ namespace PlayroomDemo
 
         private void ChooseJaguarPlayer()
         {
-            Debug.Log("Choosing Jaguar Player");
+            Debug.Log("Choosing Jaguar Player...");
             int randomJaguarSelection = Random.Range(0, 2);
             string player = randomJaguarSelection == 0 ? "player1" : "player2";
             playroomKit.SetState("jaguarPlayer", player, true);
@@ -103,9 +103,7 @@ namespace PlayroomDemo
 
         public void OnJaguarPlayerChosen (string jaguarPlayer)
         {
-            Debug.Log("OnJaguarPlayerChosen: " + jaguarPlayer + " / PlayerRole: " + playerRole);
             bool amIJaguar = (playerRole == jaguarPlayer);
-            Debug.Log(playroomKit.MyPlayer().GetProfile().name + " / amIJaguar: " + amIJaguar);
             InterfaceManager.Instance.SetupCurrentPlayerInterface(amIJaguar, playroomKit.MyPlayer().GetProfile().name);
             InterfaceManager.Instance.SetupOpponentPlayerInterface(!amIJaguar, GetOtherPlayerName());
             PlayerController.Instance.SetPlayerJaguar(amIJaguar);
@@ -124,7 +122,6 @@ namespace PlayroomDemo
 
         public void OnPlayerTurnUpdate (string playerTurn)
         {
-            Debug.Log("OnPlayerTurnUpdate: " + playerTurn);
             this.playerTurn = playerTurn;
             bool isCurrentPlayerTurn = (playerTurn == playerRole);
             InterfaceManager.Instance.SetPlayerTurnText(isCurrentPlayerTurn);
@@ -133,7 +130,6 @@ namespace PlayroomDemo
 
         public void OnPlayerFinishedTurn ()
         {
-            Debug.Log("Turn Finished.");
             if (playerTurn == "player1")
             {
                 playroomKit.SetState("playerTurn", "player2", true);
