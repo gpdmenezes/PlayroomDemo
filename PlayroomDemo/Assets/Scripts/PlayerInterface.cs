@@ -27,7 +27,7 @@ public class PlayerInterface : MonoBehaviour
     {
         if (isMyTurn)
         {
-            playerTurn.text = "MY TURN";
+            playerTurn.text = "PLAYING";
         }
         else
         {

@@ -2614,7 +2614,7 @@ GameObject:
   - component: {fileID: 135186563}
   - component: {fileID: 135186562}
   m_Layer: 5
-  m_Name: Player2Background
+  m_Name: OpponentPlayerBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4538,7 +4538,7 @@ GameObject:
   - component: {fileID: 229350849}
   - component: {fileID: 229350848}
   m_Layer: 5
-  m_Name: Player2Name
+  m_Name: OpponentPlayerName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9416,8 +9416,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7108ea5ec87db4449057f7c7d6d347b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player1Interface: {fileID: 796645478}
-  player2Interface: {fileID: 2083167544}
+  currentPlayerInterface: {fileID: 796645478}
+  opponentPlayerInterface: {fileID: 2083167544}
 --- !u!4 &478623215
 Transform:
   m_ObjectHideFlags: 0
@@ -11273,7 +11273,7 @@ GameObject:
   - component: {fileID: 628790499}
   - component: {fileID: 628790498}
   m_Layer: 5
-  m_Name: Player1Name
+  m_Name: CurrentPlayerName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14175,7 +14175,7 @@ GameObject:
   - component: {fileID: 796645477}
   - component: {fileID: 796645478}
   m_Layer: 5
-  m_Name: Player1Interface
+  m_Name: CurrentPlayerInterface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14400,7 +14400,7 @@ GameObject:
   - component: {fileID: 813192025}
   - component: {fileID: 813192024}
   m_Layer: 5
-  m_Name: Player2Turn
+  m_Name: OpponentPlayerTurn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20207,7 +20207,7 @@ GameObject:
   - component: {fileID: 1136459569}
   - component: {fileID: 1136459568}
   m_Layer: 5
-  m_Name: Player2Type
+  m_Name: OpponentPlayerType
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22399,7 +22399,7 @@ GameObject:
   - component: {fileID: 1281318142}
   - component: {fileID: 1281318141}
   m_Layer: 5
-  m_Name: Player1Background
+  m_Name: CurrentPlayerBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23649,7 +23649,7 @@ GameObject:
   - component: {fileID: 1378522132}
   - component: {fileID: 1378522131}
   m_Layer: 5
-  m_Name: Player1Turn
+  m_Name: CurrentPlayerTurn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29662,7 +29662,7 @@ GameObject:
   - component: {fileID: 1751633707}
   - component: {fileID: 1751633706}
   m_Layer: 5
-  m_Name: Player1Type
+  m_Name: CurrentPlayerType
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35781,7 +35781,7 @@ GameObject:
   - component: {fileID: 2083167543}
   - component: {fileID: 2083167544}
   m_Layer: 5
-  m_Name: Player2Interface
+  m_Name: OpponentPlayerInterface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -4,30 +4,30 @@ public class InterfaceManager : MonoBehaviour
 {
     public static InterfaceManager Instance;
 
-    [SerializeField] private PlayerInterface player1Interface;
-    [SerializeField] private PlayerInterface player2Interface;
+    [SerializeField] private PlayerInterface currentPlayerInterface;
+    [SerializeField] private PlayerInterface opponentPlayerInterface;
 
     private void Awake ()
     {
         Instance = this;
     }
 
-    public void SetupPlayerInterface (bool isPlayer1, string playerName, bool isJaguar)
+    public void SetupCurrentPlayerInterface (bool isJaguar, string playerName)
     {
-        if (isPlayer1)
-        {
-            player1Interface.SetupInterface(isJaguar, playerName);
-        }
-        else
-        {
-            player2Interface.SetupInterface(isJaguar, playerName);
-        }
+        Debug.Log("CurrentPlayer: " + playerName + " /isJaguar: " + isJaguar);
+        currentPlayerInterface.SetupInterface(isJaguar, playerName);
     }
 
-    public void SetPlayerTurnText (bool isPlayer1Turn)
+    public void SetupOpponentPlayerInterface (bool isJaguar, string playerName)
     {
-        player1Interface.SetPlayerTurnText(isPlayer1Turn);
-        player2Interface.SetPlayerTurnText(!isPlayer1Turn);
+        Debug.Log("OpponentPlayer: " + playerName + " /isJaguar: " + isJaguar);
+        opponentPlayerInterface.SetupInterface(isJaguar, playerName);
+    }
+
+    public void SetPlayerTurnText (bool isCurrentPlayerTurn)
+    {
+        currentPlayerInterface.SetPlayerTurnText(isCurrentPlayerTurn);
+        opponentPlayerInterface.SetPlayerTurnText(!isCurrentPlayerTurn);
     }
 
 }

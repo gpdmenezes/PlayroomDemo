@@ -4,12 +4,20 @@ namespace PlayroomDemo
 {
     public class PlayerController : MonoBehaviour
     {
+        public static PlayerController Instance;
+
         private BoardPiece selectedPiece = null;
-        private bool canClick = false;
+        private bool isPlayerJaguar = false;
+        private bool isPlayerTurn = false;
+
+        private void Awake ()
+        {
+            Instance = this;
+        }
 
         private void Update ()
         {
-            if (!canClick) return;
+            if (!isPlayerTurn) return;
 
             if (Input.GetMouseButtonDown(1))
             {
@@ -56,6 +64,7 @@ namespace PlayroomDemo
         {
             if (selectedPiece != null) DeselectPiece();
             selectedPiece = hit.transform.GetComponent<BoardPiece>();
+            if ((!isPlayerJaguar && selectedPiece.IsJaguar()) || isPlayerJaguar && !selectedPiece.IsJaguar()) return;
             selectedPiece.OnPieceInteraction(true);
         }
 
@@ -84,6 +93,18 @@ namespace PlayroomDemo
             BoardPiece oldPiece = selectedPiece;
             DeselectPiece();
             oldPiece.SetBoardPosition(boardPosition);
+            isPlayerTurn = false;
+            PlayroomManager.Instance.OnPlayerFinishedTurn();
+        }
+
+        public void SetPlayerJaguar (bool isPlayerJaguar)
+        {
+            this.isPlayerJaguar = isPlayerJaguar;
+        }
+
+        public void SetPlayerTurn (bool isPlayerTurn)
+        {
+            this.isPlayerTurn = isPlayerTurn;
         }
     }
 }
