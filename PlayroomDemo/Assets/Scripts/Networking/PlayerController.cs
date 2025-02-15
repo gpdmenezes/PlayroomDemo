@@ -1,6 +1,7 @@
+using PlayroomDemo.Board;
 using UnityEngine;
 
-namespace PlayroomDemo
+namespace PlayroomDemo.Networking
 {
     public class PlayerController : MonoBehaviour
     {

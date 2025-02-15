@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PlayroomDemo
+namespace PlayroomDemo.Board
 {
     public class BoardPosition : MonoBehaviour
     {

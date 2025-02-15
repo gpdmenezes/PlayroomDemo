@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace PlayroomDemo
+namespace PlayroomDemo.Board
 {
     public class BoardPiece : MonoBehaviour
     {

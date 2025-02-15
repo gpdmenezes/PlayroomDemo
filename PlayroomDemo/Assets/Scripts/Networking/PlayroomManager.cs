@@ -5,8 +5,10 @@ using AOT;
 using System;
 using Random = UnityEngine.Random;
 using static Playroom.PlayroomKit;
+using PlayroomDemo.UI;
+using PlayroomDemo.Board;
 
-namespace PlayroomDemo
+namespace PlayroomDemo.Networking
 {
     public class PlayroomManager : MonoBehaviour
     {
@@ -16,9 +18,11 @@ namespace PlayroomDemo
 
         private PlayroomKit playroomKit = new();
         private static readonly List<Player> currentPlayers = new();
+        private bool hasMatchStarted = false;
         private string playerRole = "none";
         private string playerTurn = "none";
-        private bool hasMatchStarted = false;
+        private Vector2 selectedPieceCoordinates = new Vector2(-1, -1);
+        private Vector2 selectedPositionCoordinates = new Vector2(-1, -1);
 
         private void Awake()
         {
@@ -36,6 +40,8 @@ namespace PlayroomDemo
                     {"isPlayer2Ready", "false"},
                     {"jaguarPlayer", "none"},
                     {"playerTurn", "none"},
+                    {"selectedPieceCoordinates", new Vector2(-1, -1)},
+                    {"selectedPositionCoordinates", new Vector2(-1, -1)},
             },
             }, () => {
                 playroomKit.OnPlayerJoin(AddPlayer);
@@ -57,24 +63,18 @@ namespace PlayroomDemo
         private void Update ()
         {
             if (!playerJoined) return;
-            if (!hasMatchStarted && currentPlayers.Count >= 2)
-            {
-                hasMatchStarted = true;
-                StartMatch();
-            }
-
+            if (!hasMatchStarted && currentPlayers.Count >= 2) StartMatch();
             if (!hasMatchStarted) return;
-            string playerTurn = playroomKit.GetState<string>("playerTurn");
-            if (this.playerTurn != playerTurn)
-            {
-                this.playerTurn = playerTurn;
-                OnPlayerTurnUpdate(playerTurn);
-            }
+
+            CheckPlayerTurnUpdate(playroomKit.GetState<string>("playerTurn"));
+            CheckSelectedPieceCoordinatesUpdate(playroomKit.GetState<Vector2>("selectedPieceCoordinates"));
+            CheckSelectedPositionCoordinatesUpdate(playroomKit.GetState<Vector2>("selectedPositionCoordinates"));
         }
 
         public void StartMatch ()
         {
             Debug.Log("Starting Match...");
+            hasMatchStarted = true;
             BoardManager.Instance.ResetBoard();
             SetPlayerRoles();
         }
@@ -120,24 +120,35 @@ namespace PlayroomDemo
             return name;
         }
 
-        public void OnPlayerTurnUpdate (string playerTurn)
+        private void CheckPlayerTurnUpdate (string playerTurn)
         {
+            if (this.playerTurn == playerTurn) return;
+            Debug.Log("PlayerTurn updated: " + playerTurn);
             this.playerTurn = playerTurn;
             bool isCurrentPlayerTurn = (playerTurn == playerRole);
             InterfaceManager.Instance.SetPlayerTurnText(isCurrentPlayerTurn);
             PlayerController.Instance.SetPlayerTurn(isCurrentPlayerTurn);
         }
 
+        private void CheckSelectedPieceCoordinatesUpdate (Vector2 selectedPieceCoordinates)
+        {
+            if (this.selectedPieceCoordinates == selectedPieceCoordinates) return;
+            Debug.Log("SelectedPieceCoordinates updated: " + selectedPieceCoordinates);
+            this.selectedPieceCoordinates = selectedPieceCoordinates;
+
+        }
+
+        private void CheckSelectedPositionCoordinatesUpdate (Vector2 selectedPositionCoordinates)
+        {
+            if (this.selectedPositionCoordinates == selectedPositionCoordinates) return;
+            Debug.Log("SelectedPositionCoordinates updated: " + selectedPositionCoordinates);
+            this.selectedPositionCoordinates = selectedPositionCoordinates;
+
+        }
+
         public void OnPlayerFinishedTurn ()
         {
-            if (playerTurn == "player1")
-            {
-                playroomKit.SetState("playerTurn", "player2", true);
-            }
-            else
-            {
-                playroomKit.SetState("playerTurn", "player1", true);
-            }
+            playroomKit.SetState("playerTurn", (playerTurn == "player1") ? "player2" : "player1", true);
         }
 
         public static void AddPlayer (Player player)
