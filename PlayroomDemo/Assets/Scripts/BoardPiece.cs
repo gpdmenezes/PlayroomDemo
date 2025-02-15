@@ -47,12 +47,12 @@ namespace PlayroomDemo
 
         public bool IsBoardPositionValidForMove (BoardPosition boardPosition)
         {
-            return currentPosition.IsNeighborPosition(boardPosition);
+            return currentPosition.IsPositionNeighbor(boardPosition);
         }
 
         public bool IsBoardPositionValidForJump (BoardPosition boardPosition)
         {
-            return currentPosition.IsJumpPosition(boardPosition);
+            return currentPosition.IsPositionJumpable(boardPosition);
         }
 
         public void RemoveJumpedPiece (BoardPosition boardPosition)

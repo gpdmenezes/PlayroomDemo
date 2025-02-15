@@ -5,9 +5,12 @@ namespace PlayroomDemo
     public class PlayerController : MonoBehaviour
     {
         private BoardPiece selectedPiece = null;
+        private bool canClick = false;
 
         private void Update ()
         {
+            if (!canClick) return;
+
             if (Input.GetMouseButtonDown(1))
             {
                 DeselectPiece();

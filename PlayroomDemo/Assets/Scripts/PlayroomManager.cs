@@ -12,13 +12,13 @@ namespace PlayroomDemo
     {
         [SerializeField] private static bool playerJoined;
 
-        private PlayroomKit _playroomKit = new();
-        private static readonly List<PlayroomKit.Player> currentPlayers = new();
+        private PlayroomKit playroomKit = new();
+        private static readonly List<Player> currentPlayers = new();
         private bool hasMatchStarted = false;
 
         private void Start()
         {
-            _playroomKit.InsertCoin(new InitOptions()
+            playroomKit.InsertCoin(new InitOptions()
             {
                 allowGamepads = false,
                 skipLobby = false,
@@ -28,17 +28,26 @@ namespace PlayroomDemo
                     {"playerTurn", "none"},
             },
             }, () => {
-                _playroomKit.OnPlayerJoin(AddPlayer);
+                playroomKit.OnPlayerJoin(AddPlayer);
+            });
+
+            playroomKit.WaitForState("jaguarPlayer", (value) => 
+            {
+                OnJaguarPlayerUpdate(value);
+            });
+
+            playroomKit.WaitForState("playerTurn", (value) =>
+            {
+                OnPlayerTurnUpdate(value);
             });
         }
 
-        private void Update()
+        private void Update ()
         {
-            if (playerJoined)
-            {
-                var myPlayer = _playroomKit.MyPlayer();
-                var index = currentPlayers.IndexOf(myPlayer);
-            }
+            if (!playerJoined) return;
+
+            Player myPlayer = playroomKit.MyPlayer();
+            int index = currentPlayers.IndexOf(myPlayer);
 
             if (!hasMatchStarted && currentPlayers.Count >= 2)
             {
@@ -51,7 +60,7 @@ namespace PlayroomDemo
         {
             Debug.Log("Starting Match!");
             BoardManager.Instance.ResetBoard();
-            if (!_playroomKit.IsHost()) return;
+            if (!playroomKit.IsHost()) return;
             SelectRandomJaguarPlayer();
         }
 
@@ -60,19 +69,32 @@ namespace PlayroomDemo
             int randomJaguarSelection = Random.Range(0, 2);
             if (randomJaguarSelection == 0)
             {
-                _playroomKit.SetState("jaguarPlayer", "player1", true);
-                InterfaceManager.Instance.SetJaguarPlayerName(currentPlayers[0].GetProfile().name);
-                InterfaceManager.Instance.SetDogPlayerName(currentPlayers[1].GetProfile().name);
+                playroomKit.SetState("jaguarPlayer", "player1", true);
+                playroomKit.SetState("playerTurn", "player1", true);
             }
             else
             {
-                _playroomKit.SetState("jaguarPlayer", "player2", true);
-                InterfaceManager.Instance.SetJaguarPlayerName(currentPlayers[1].GetProfile().name);
-                InterfaceManager.Instance.SetDogPlayerName(currentPlayers[0].GetProfile().name);
+                playroomKit.SetState("jaguarPlayer", "player2", true);
+                playroomKit.SetState("playerTurn", "player2", true);
             }
         }
 
-        public static void AddPlayer(PlayroomKit.Player player)
+        public void OnJaguarPlayerUpdate (string jaguarPlayer)
+        {
+            Debug.Log("OnJaguarPlayerUpdate");
+            bool isPlayer1Jaguar = (jaguarPlayer == "player1");
+            InterfaceManager.Instance.SetupPlayerInterface(true, currentPlayers[0].GetProfile().name, isPlayer1Jaguar);
+            InterfaceManager.Instance.SetupPlayerInterface(false, currentPlayers[1].GetProfile().name, !isPlayer1Jaguar);
+        }
+
+        public void OnPlayerTurnUpdate (string playerTurn)
+        {
+            Debug.Log("OnPlayerTurnUpdate");
+            bool isPlayer1Turn = (playerTurn == "player1");
+            InterfaceManager.Instance.SetPlayerTurnText(isPlayer1Turn);
+        }
+
+        public static void AddPlayer (Player player)
         {
             currentPlayers.Add(player);
             Debug.Log(player.GetProfile().name + " joined the game! (PlayerID: " + player.id + ")");
@@ -81,7 +103,7 @@ namespace PlayroomDemo
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void RemovePlayer(string playerID)
+        private static void RemovePlayer (string playerID)
         {
             Debug.Log("PlayerID " + playerID + " left the game.");
         }

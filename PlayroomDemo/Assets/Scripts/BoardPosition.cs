@@ -37,7 +37,7 @@ namespace PlayroomDemo
             occupationMarker.SetActive(shouldEnable);
         }
 
-        public bool IsNeighborPosition (BoardPosition boardPosition)
+        public bool IsPositionNeighbor (BoardPosition boardPosition)
         {
             for (int i = 0; i < neighborPositions.Length; i++)
             {
@@ -55,7 +55,7 @@ namespace PlayroomDemo
             }
         }
 
-        public bool IsJumpPosition (BoardPosition boardPosition)
+        public bool IsPositionJumpable (BoardPosition boardPosition)
         {
             List<BoardPosition> availableJumps = ListAllAvailableJumps();
             if (availableJumps.Contains(boardPosition)) return true;

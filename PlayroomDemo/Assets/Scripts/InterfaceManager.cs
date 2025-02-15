@@ -1,25 +1,33 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InterfaceManager : MonoBehaviour
 {
     public static InterfaceManager Instance;
 
-    [SerializeField] private Text dogPlayerName = null;
-    [SerializeField] private Text jaguarPlayerName = null;
+    [SerializeField] private PlayerInterface player1Interface;
+    [SerializeField] private PlayerInterface player2Interface;
 
-    private void Awake()
+    private void Awake ()
     {
         Instance = this;
     }
 
-    public void SetJaguarPlayerName (string name)
+    public void SetupPlayerInterface (bool isPlayer1, string playerName, bool isJaguar)
     {
-        jaguarPlayerName.text = name;
+        if (isPlayer1)
+        {
+            player1Interface.SetupInterface(isJaguar, playerName);
+        }
+        else
+        {
+            player2Interface.SetupInterface(isJaguar, playerName);
+        }
     }
 
-    public void SetDogPlayerName (string name)
+    public void SetPlayerTurnText (bool isPlayer1Turn)
     {
-        dogPlayerName.text = name;
+        player1Interface.SetPlayerTurnText(isPlayer1Turn);
+        player2Interface.SetPlayerTurnText(!isPlayer1Turn);
     }
+
 }
