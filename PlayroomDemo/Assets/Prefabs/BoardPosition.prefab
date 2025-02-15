@@ -152,6 +152,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   occupationMarker: {fileID: 1605323674720281179}
+  xPosition: 0
+  yPosition: 0
   neighborPositions: []
 --- !u!1 &8160705183495876277
 GameObject:
@@ -214,7 +216,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7851765821c80b546a23ff679d98ea4f, type: 2}
+  - {fileID: 4874126678125670354, guid: adad4bbb8b7e8dc45bb69ac439810101, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
