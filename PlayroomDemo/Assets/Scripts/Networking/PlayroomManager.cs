@@ -195,12 +195,12 @@ namespace PlayroomDemo.Networking
         {
             if (selectedPositionCoordinates == null || this.selectedPositionCoordinates == selectedPositionCoordinates) return;
             Debug.Log("SelectedPositionCoordinates updated: " + selectedPositionCoordinates);
-            
+
             this.selectedPositionCoordinates = selectedPositionCoordinates;
             BoardPiece selectedPiece = BoardManager.Instance.GetBoardPieceByCoordinate(selectedPieceCoordinates);
             BoardPosition selectedPosition = BoardManager.Instance.GetBoardPositionByCoordinate(selectedPositionCoordinates);
-            BoardManager.Instance.ApplyMove(selectedPiece, selectedPosition);
             selectedPiece.OnInteraction(false);
+            BoardManager.Instance.ApplyMove(selectedPiece, selectedPosition);
             CheckWinConditions();
         }
 
