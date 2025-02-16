@@ -72,5 +72,21 @@ namespace PlayroomDemo.Board
             BoardPiece boardPiece = GetBoardPieceByPosition(boardPosition);
             return boardPiece;
         }
+
+        public void ApplyMove (BoardPiece selectedPiece, BoardPosition boardPosition)
+        {
+            if (selectedPiece.IsJaguar() && selectedPiece.IsBoardPositionValidForJump(boardPosition))
+            {
+                selectedPiece.RemoveJumpedPiece(boardPosition);
+                selectedPiece.SetBoardPosition(boardPosition);
+                return;
+            }
+
+            if (selectedPiece.IsBoardPositionValidForMove(boardPosition))
+            {
+                selectedPiece.SetBoardPosition(boardPosition);
+                return;
+            }
+        }
     }
 }

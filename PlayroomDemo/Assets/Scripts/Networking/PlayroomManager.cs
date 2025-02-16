@@ -24,12 +24,12 @@ namespace PlayroomDemo.Networking
         private Vector2 selectedPieceCoordinates = new Vector2(-1, -1);
         private Vector2 selectedPositionCoordinates = new Vector2(-1, -1);
 
-        private void Awake()
+        private void Awake ()
         {
             Instance = this;
         }
 
-        private void Start()
+        private void Start ()
         {
             playroomKit.InsertCoin(new InitOptions()
             {
@@ -99,7 +99,7 @@ namespace PlayroomDemo.Networking
             }
         }
 
-        private void ChooseJaguarPlayer()
+        private void ChooseJaguarPlayer ()
         {
             Debug.Log("Choosing Jaguar Player...");
             int randomJaguarSelection = Random.Range(0, 2);
@@ -114,7 +114,7 @@ namespace PlayroomDemo.Networking
             InterfaceManager.Instance.SetupCurrentPlayerInterface(amIJaguar, playroomKit.MyPlayer().GetProfile().name);
             InterfaceManager.Instance.SetupOpponentPlayerInterface(!amIJaguar, GetOtherPlayerName());
             InterfaceManager.Instance.FadeOut();
-            PlayerController.Instance.SetPlayerJaguar(amIJaguar);
+            LocalInputController.Instance.SetPlayerJaguar(amIJaguar);
         }
 
         private string GetOtherPlayerName ()
@@ -136,7 +136,7 @@ namespace PlayroomDemo.Networking
             this.playerTurn = playerTurn;
             bool isCurrentPlayerTurn = (playerTurn == playerRole);
             InterfaceManager.Instance.SetPlayerTurnText(isCurrentPlayerTurn);
-            PlayerController.Instance.SetPlayerTurn(isCurrentPlayerTurn);
+            LocalInputController.Instance.SetPlayerTurn(isCurrentPlayerTurn);
         }
 
         private void CheckSelectedPieceCoordinatesUpdate (Vector2 selectedPieceCoordinates)
@@ -160,8 +160,14 @@ namespace PlayroomDemo.Networking
             this.selectedPositionCoordinates = selectedPositionCoordinates;
             BoardPiece selectedPiece = BoardManager.Instance.GetBoardPieceByCoordinate(selectedPieceCoordinates);
             BoardPosition selectedPosition = BoardManager.Instance.GetBoardPositionByCoordinate(selectedPositionCoordinates);
-            PlayerController.Instance.SetReceivedMove(selectedPiece, selectedPosition);
+            BoardManager.Instance.ApplyMove(selectedPiece, selectedPosition);
             selectedPiece.OnInteraction(false);
+            CheckWinConditions();
+        }
+
+        private void CheckWinConditions ()
+        {
+
         }
 
         public void OnPlayerFinishedTurn ()

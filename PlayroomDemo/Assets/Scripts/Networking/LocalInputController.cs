@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace PlayroomDemo.Networking
 {
-    public class PlayerController : MonoBehaviour
+    public class LocalInputController : MonoBehaviour
     {
-        public static PlayerController Instance;
+        public static LocalInputController Instance;
 
         [SerializeField] private Camera mainCamera = null;
 
@@ -49,32 +49,26 @@ namespace PlayroomDemo.Networking
 
         private void OnPieceClicked (RaycastHit hit)
         {
-            Debug.Log("Piece - Clicked.");
             selectedPiece = hit.transform.GetComponent<BoardPiece>();
             if ((!isPlayerJaguar && selectedPiece.IsJaguar()) || isPlayerJaguar && !selectedPiece.IsJaguar()) return;
-            Debug.Log("Piece - Message Sent.");
             PlayroomManager.Instance.OnPlayerSelectedPiece(selectedPiece.GetBoardPosition().GetCoordinates());
         }
 
         private void OnPositionClicked (RaycastHit hit)
         {
-            Debug.Log("Position - Clicked.");
             if (selectedPiece == null) return;
             BoardPosition boardPosition = hit.transform.GetComponent<BoardPosition>();
             if (boardPosition.IsOccupied()) return;
 
             if (!selectedPiece.IsJaguar())
             {
-                Debug.Log("Position - Is Jaguar.");
                 if (!selectedPiece.IsBoardPositionValidForMove(boardPosition)) return;
             }
             else
             {
-                Debug.Log("Position - Not Jaguar.");
                 if (!selectedPiece.IsBoardPositionValidForJump(boardPosition) && !selectedPiece.IsBoardPositionValidForMove(boardPosition)) return;
             }
 
-            Debug.Log("Position - Message Sent.");
             PlayroomManager.Instance.OnPlayerSelectedPosition(boardPosition.GetCoordinates());
             isPlayerTurn = false;
             Invoke(nameof(FinishPlayerTurn), 0.5f);
@@ -93,23 +87,6 @@ namespace PlayroomDemo.Networking
         public void SetPlayerTurn (bool isPlayerTurn)
         {
             this.isPlayerTurn = isPlayerTurn;
-        }
-
-        public void SetReceivedMove (BoardPiece selectedPiece, BoardPosition boardPosition)
-        {
-            Debug.Log("MOVE - Piece: " + selectedPiece + " / Position: " + boardPosition);
-            if (selectedPiece.IsJaguar() && selectedPiece.IsBoardPositionValidForJump(boardPosition))
-            {
-                selectedPiece.RemoveJumpedPiece(boardPosition);
-                selectedPiece.SetBoardPosition(boardPosition);
-                return;
-            }
-
-            if (selectedPiece.IsBoardPositionValidForMove(boardPosition))
-            {
-                selectedPiece.SetBoardPosition(boardPosition);
-                return;
-            }
         }
     }
 }
