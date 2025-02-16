@@ -11,13 +11,17 @@ namespace PlayroomDemo.UI
         [SerializeField] private Image icon = null;
         [SerializeField] private Text playerName = null;
         [SerializeField] private Text playerTurn = null;
+        [SerializeField] private Text dogCounter = null;
 
         [Header("Icons")]
         [SerializeField] private Sprite jaguarSprite = null;
         [SerializeField] private Sprite dogSprite = null;
 
+        private bool isJaguar = false;
+
         public void SetupInterface (bool isJaguar, string playerName)
         {
+            this.isJaguar = isJaguar;
             this.playerName.text = playerName;
             if (isJaguar)
             {
@@ -25,6 +29,7 @@ namespace PlayroomDemo.UI
                 icon.rectTransform.sizeDelta = new Vector2(170, 100);
                 banner.color = Color.yellow;
                 bannerBottom.color = Color.yellow;
+                dogCounter.gameObject.SetActive(true);
             }
             else
             {
@@ -32,6 +37,7 @@ namespace PlayroomDemo.UI
                 icon.rectTransform.sizeDelta = new Vector2(160, 110);
                 banner.color = Color.green;
                 bannerBottom.color = Color.green;
+                dogCounter.gameObject.SetActive(false);
             }
         }
 
@@ -45,6 +51,12 @@ namespace PlayroomDemo.UI
             {
                 playerTurn.text = "";
             }
+        }
+
+        public void SetDogCounterText (int count)
+        {
+            if (!isJaguar) return;
+            dogCounter.text = count.ToString();
         }
     }
 }

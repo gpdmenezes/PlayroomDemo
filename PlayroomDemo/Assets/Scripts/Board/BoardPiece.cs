@@ -30,6 +30,7 @@ namespace PlayroomDemo.Board
             boxCollider.enabled = true;
             model.SetActive(true);
             selectionMarker.SetActive(false);
+            transform.position = Vector3.zero;
         }
 
         public void SetBoardPosition (BoardPosition boardPosition)

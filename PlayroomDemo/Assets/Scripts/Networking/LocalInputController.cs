@@ -69,7 +69,8 @@ namespace PlayroomDemo.Networking
                 if (!selectedPiece.IsBoardPositionValidForJump(boardPosition) && !selectedPiece.IsBoardPositionValidForMove(boardPosition)) return;
             }
 
-            PlayroomManager.Instance.OnPlayerSelectedPosition(boardPosition.GetCoordinates());
+            bool isJump = selectedPiece.IsJaguar() && selectedPiece.IsBoardPositionValidForJump(boardPosition);
+            PlayroomManager.Instance.OnPlayerSelectedPosition(boardPosition.GetCoordinates(), isJump);
             isPlayerTurn = false;
             Invoke(nameof(FinishPlayerTurn), 1f);
         }

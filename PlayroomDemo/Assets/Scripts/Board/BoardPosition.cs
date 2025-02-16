@@ -84,5 +84,19 @@ namespace PlayroomDemo.Board
             BoardPosition position = BoardManager.Instance.GetBoardPositionByCoordinate(finalCoordinates);
             return BoardManager.Instance.GetBoardPieceByPosition(position);
         }
+
+        public bool CanMoveFromPosition ()
+        {
+            foreach (BoardPosition boardPosition in neighborPositions)
+            {
+                if (boardPosition.IsOccupied()) continue;
+                return true;
+            }
+
+            if (ListAllAvailableJumps().Count >= 1) return true;
+
+            return false;
+        }
+
     }
 }

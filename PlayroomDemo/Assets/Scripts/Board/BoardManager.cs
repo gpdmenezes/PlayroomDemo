@@ -1,3 +1,4 @@
+using PlayroomDemo.Networking;
 using UnityEngine;
 
 namespace PlayroomDemo.Board
@@ -87,6 +88,11 @@ namespace PlayroomDemo.Board
                 selectedPiece.SetBoardPosition(boardPosition);
                 return;
             }
+        }
+
+        public bool IsJaguarLocked ()
+        {
+            return !jaguarPiece.GetBoardPosition().CanMoveFromPosition();
         }
     }
 }

@@ -20,9 +20,12 @@ namespace PlayroomDemo.Networking
         private static readonly List<Player> currentPlayers = new();
         private bool hasMatchStarted = false;
         private string playerRole = "none";
+        private bool amIJaguar = false;
         private string playerTurn = "none";
         private Vector2 selectedPieceCoordinates = new Vector2(-1, -1);
         private Vector2 selectedPositionCoordinates = new Vector2(-1, -1);
+        private string winner = "none";
+        private int dogCounter = 0;
 
         private void Awake ()
         {
@@ -42,6 +45,8 @@ namespace PlayroomDemo.Networking
                     {"playerTurn", "none"},
                     {"selectedPieceCoordinates", new Vector2(-1, -1)},
                     {"selectedPositionCoordinates", new Vector2(-1, -1)},
+                    {"winner", "none" },
+                    {"dogCounter", 0 },
             },
             }, () => {
                 playroomKit.OnPlayerJoin(AddPlayer);
@@ -50,7 +55,7 @@ namespace PlayroomDemo.Networking
             playroomKit.WaitForState("isPlayer2Ready", (value) =>
             {
                 string receivedValue = playroomKit.GetState<string>("isPlayer2Ready");
-                if (playroomKit.IsHost()) ChooseJaguarPlayer();
+                ChooseJaguarPlayer();
             });
 
             playroomKit.WaitForState("jaguarPlayer", (value) => 
@@ -66,22 +71,35 @@ namespace PlayroomDemo.Networking
             if (!hasMatchStarted && currentPlayers.Count >= 2) StartMatch();
             if (!hasMatchStarted) return;
 
+            CheckWinnerUpdate(playroomKit.GetState<string>("winner"));
+            CheckDogCounterUpdate(playroomKit.GetState<int>("dogCount"));
             CheckPlayerTurnUpdate(playroomKit.GetState<string>("playerTurn"));
             CheckSelectedPieceCoordinatesUpdate(playroomKit.GetState<Vector2>("selectedPieceCoordinates"));
             CheckSelectedPositionCoordinatesUpdate(playroomKit.GetState<Vector2>("selectedPositionCoordinates"));
         }
 
-        public void StartMatch ()
+        private void StartMatch ()
         {
             Debug.Log("Starting Match...");
             hasMatchStarted = true;
             BoardManager.Instance.ResetBoard();
-            ResetCoordinates();
+            ResetStates();
             SetPlayerRoles();
         }
 
-        private void ResetCoordinates ()
+        private void ResetStates ()
         {
+            amIJaguar = false;
+            playerTurn = "none";
+            selectedPieceCoordinates = new Vector2(-1, -1);
+            selectedPositionCoordinates = new Vector2(-1, -1);
+            winner = "none";
+            dogCounter = 0;
+
+            if (!playroomKit.IsHost()) return;
+
+            playroomKit.SetState("winner", "none", true);
+            playroomKit.SetState("dogCounter", 0, true);
             playroomKit.SetState("selectedPieceCoordinates", new Vector2(-1, -1), true);
             playroomKit.SetState("selectedPositionCoordinates", new Vector2(-1, -1), true);
         }
@@ -101,6 +119,7 @@ namespace PlayroomDemo.Networking
 
         private void ChooseJaguarPlayer ()
         {
+            if (!playroomKit.IsHost()) return;
             Debug.Log("Choosing Jaguar Player...");
             int randomJaguarSelection = Random.Range(0, 2);
             string player = randomJaguarSelection == 0 ? "player1" : "player2";
@@ -108,9 +127,9 @@ namespace PlayroomDemo.Networking
             playroomKit.SetState("playerTurn", player, true);
         }
 
-        public void OnJaguarPlayerChosen (string jaguarPlayer)
+        private void OnJaguarPlayerChosen (string jaguarPlayer)
         {
-            bool amIJaguar = (playerRole == jaguarPlayer);
+            amIJaguar = (playerRole == jaguarPlayer);
             InterfaceManager.Instance.SetupCurrentPlayerInterface(amIJaguar, playroomKit.MyPlayer().GetProfile().name);
             InterfaceManager.Instance.SetupOpponentPlayerInterface(!amIJaguar, GetOtherPlayerName());
             InterfaceManager.Instance.FadeOut();
@@ -126,6 +145,26 @@ namespace PlayroomDemo.Networking
                 name = player.GetProfile().name;
             }
             return name;
+        }
+
+        private void CheckWinnerUpdate (string winner)
+        {
+            if (this.winner == winner) return;
+            Debug.Log("Winner updated: " + winner);
+
+            this.winner = winner;
+            bool isJaguarWinner = (winner == "jaguar");
+            bool isPlayerWinner = (isJaguarWinner && amIJaguar) || (!isJaguarWinner && !amIJaguar);
+            InterfaceManager.Instance.SetWinner(isPlayerWinner, isJaguarWinner);
+        }
+
+        private void CheckDogCounterUpdate (int dogCounter)
+        {
+            if (this.dogCounter == dogCounter) return;
+            Debug.Log("DogCounter updated: " + dogCounter);
+
+            this.dogCounter = dogCounter;
+            InterfaceManager.Instance.SetDogCounter(dogCounter);
         }
 
         private void CheckPlayerTurnUpdate (string playerTurn)
@@ -167,7 +206,9 @@ namespace PlayroomDemo.Networking
 
         private void CheckWinConditions ()
         {
-
+            if (!playroomKit.IsHost()) return;
+            if (BoardManager.Instance.IsJaguarLocked()) playroomKit.SetState("winner", "dogs", true);
+            if (dogCounter >= 6) playroomKit.SetState("winner", "jaguar", true);
         }
 
         public void OnPlayerFinishedTurn ()
@@ -180,9 +221,17 @@ namespace PlayroomDemo.Networking
             playroomKit.SetState("selectedPieceCoordinates", selectedPieceCoordinates, true);
         }
 
-        public void OnPlayerSelectedPosition (Vector2 selectedPositionCoordinates)
+        public void OnPlayerSelectedPosition (Vector2 selectedPositionCoordinates, bool isJump)
         {
             playroomKit.SetState("selectedPositionCoordinates", selectedPositionCoordinates, true);
+            if (isJump) OnJaguarJumped();
+        }
+
+        private void OnJaguarJumped()
+        {
+            int currentDogCount = playroomKit.GetState<int>("dogCount");
+            currentDogCount++;
+            playroomKit.SetState<int>("dogCount", currentDogCount, true);
         }
 
         public static void AddPlayer (Player player)
