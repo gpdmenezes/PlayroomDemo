@@ -76,7 +76,14 @@ namespace PlayroomDemo.Networking
             Debug.Log("Starting Match...");
             hasMatchStarted = true;
             BoardManager.Instance.ResetBoard();
+            ResetCoordinates();
             SetPlayerRoles();
+        }
+
+        private void ResetCoordinates ()
+        {
+            playroomKit.SetState("selectedPieceCoordinates", new Vector2(-1, -1), true);
+            playroomKit.SetState("selectedPositionCoordinates", new Vector2(-1, -1), true);
         }
 
         private void SetPlayerRoles ()
@@ -124,6 +131,7 @@ namespace PlayroomDemo.Networking
         {
             if (this.playerTurn == playerTurn) return;
             Debug.Log("PlayerTurn updated: " + playerTurn);
+
             this.playerTurn = playerTurn;
             bool isCurrentPlayerTurn = (playerTurn == playerRole);
             InterfaceManager.Instance.SetPlayerTurnText(isCurrentPlayerTurn);
@@ -132,23 +140,42 @@ namespace PlayroomDemo.Networking
 
         private void CheckSelectedPieceCoordinatesUpdate (Vector2 selectedPieceCoordinates)
         {
-            if (this.selectedPieceCoordinates == selectedPieceCoordinates) return;
+            if (selectedPieceCoordinates == null || this.selectedPieceCoordinates == selectedPieceCoordinates) return;
             Debug.Log("SelectedPieceCoordinates updated: " + selectedPieceCoordinates);
-            this.selectedPieceCoordinates = selectedPieceCoordinates;
 
+            BoardPiece oldPiece = BoardManager.Instance.GetBoardPieceByCoordinate(this.selectedPieceCoordinates);
+            if (oldPiece != null) oldPiece.OnInteraction(false);
+
+            this.selectedPieceCoordinates = selectedPieceCoordinates;
+            BoardPiece selectedPiece = BoardManager.Instance.GetBoardPieceByCoordinate(selectedPieceCoordinates);
+            if (selectedPiece != null) selectedPiece.OnInteraction(true);
         }
 
         private void CheckSelectedPositionCoordinatesUpdate (Vector2 selectedPositionCoordinates)
         {
-            if (this.selectedPositionCoordinates == selectedPositionCoordinates) return;
+            if (selectedPositionCoordinates == null || this.selectedPositionCoordinates == selectedPositionCoordinates) return;
             Debug.Log("SelectedPositionCoordinates updated: " + selectedPositionCoordinates);
+            
             this.selectedPositionCoordinates = selectedPositionCoordinates;
-
+            BoardPiece selectedPiece = BoardManager.Instance.GetBoardPieceByCoordinate(selectedPieceCoordinates);
+            BoardPosition selectedPosition = BoardManager.Instance.GetBoardPositionByCoordinate(selectedPositionCoordinates);
+            PlayerController.Instance.SetReceivedMove(selectedPiece, selectedPosition);
+            selectedPiece.OnInteraction(false);
         }
 
         public void OnPlayerFinishedTurn ()
         {
             playroomKit.SetState("playerTurn", (playerTurn == "player1") ? "player2" : "player1", true);
+        }
+
+        public void OnPlayerSelectedPiece (Vector2 selectedPieceCoordinates)
+        {
+            playroomKit.SetState("selectedPieceCoordinates", selectedPieceCoordinates, true);
+        }
+
+        public void OnPlayerSelectedPosition (Vector2 selectedPositionCoordinates)
+        {
+            playroomKit.SetState("selectedPositionCoordinates", selectedPositionCoordinates, true);
         }
 
         public static void AddPlayer (Player player)

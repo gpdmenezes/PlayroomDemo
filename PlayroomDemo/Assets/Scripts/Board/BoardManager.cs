@@ -57,12 +57,20 @@ namespace PlayroomDemo.Board
 
         public BoardPiece GetBoardPieceByPosition (BoardPosition boardPosition)
         {
+            if (jaguarPiece.GetBoardPosition() == boardPosition) return jaguarPiece;
             foreach (BoardPiece boardPiece in dogPieces)
             {
                 if (boardPiece.HasBeenJumped()) continue;
                 if (boardPiece.GetBoardPosition() == boardPosition) return boardPiece;
             }
             return null;
+        }
+
+        public BoardPiece GetBoardPieceByCoordinate (Vector2 givenCoordinates)
+        {
+            BoardPosition boardPosition = GetBoardPositionByCoordinate(givenCoordinates);
+            BoardPiece boardPiece = GetBoardPieceByPosition(boardPosition);
+            return boardPiece;
         }
     }
 }

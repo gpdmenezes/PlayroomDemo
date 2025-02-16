@@ -7,6 +7,8 @@ namespace PlayroomDemo.Networking
     {
         public static PlayerController Instance;
 
+        [SerializeField] private Camera mainCamera = null;
+
         private BoardPiece selectedPiece = null;
         private bool isPlayerJaguar = false;
         private bool isPlayerTurn = false;
@@ -19,82 +21,67 @@ namespace PlayroomDemo.Networking
         private void Update ()
         {
             if (!isPlayerTurn) return;
-
-            if (Input.GetMouseButtonDown(1))
-            {
-                DeselectPiece();
-                return;
-            }
-
             if (Input.GetMouseButtonDown(0))
             {
-                CheckMouseRaycast();
+                CheckMouseClickRaycast();
             }
         }
 
-        private void DeselectPiece ()
+        private void CheckMouseClickRaycast ()
         {
-            if (selectedPiece)
-            {
-                selectedPiece.OnPieceInteraction(false);
-                selectedPiece = null;
-            }
-        }
-
-        private void CheckMouseRaycast ()
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit))
             {
                 if (hit.collider.CompareTag("Piece"))
                 {
-                    OnPieceSelection(hit);
+                    OnPieceClicked(hit);
                     return;
                 }
 
                 if (hit.collider.CompareTag("Position"))
                 {
-                    OnPositionSelection(hit);
+                    OnPositionClicked(hit);
                 }
             }
         }
 
-        private void OnPieceSelection (RaycastHit hit)
+        private void OnPieceClicked (RaycastHit hit)
         {
-            if (selectedPiece != null) DeselectPiece();
+            Debug.Log("Piece - Clicked.");
             selectedPiece = hit.transform.GetComponent<BoardPiece>();
             if ((!isPlayerJaguar && selectedPiece.IsJaguar()) || isPlayerJaguar && !selectedPiece.IsJaguar()) return;
-            selectedPiece.OnPieceInteraction(true);
+            Debug.Log("Piece - Message Sent.");
+            PlayroomManager.Instance.OnPlayerSelectedPiece(selectedPiece.GetBoardPosition().GetCoordinates());
         }
 
-        private void OnPositionSelection (RaycastHit hit)
+        private void OnPositionClicked (RaycastHit hit)
         {
+            Debug.Log("Position - Clicked.");
             if (selectedPiece == null) return;
             BoardPosition boardPosition = hit.transform.GetComponent<BoardPosition>();
             if (boardPosition.IsOccupied()) return;
 
-            if (selectedPiece.IsJaguar() && selectedPiece.IsBoardPositionValidForJump(boardPosition))
+            if (!selectedPiece.IsJaguar())
             {
-                selectedPiece.RemoveJumpedPiece(boardPosition);
-                ApplyPositionMove(boardPosition);
-                return;
+                Debug.Log("Position - Is Jaguar.");
+                if (!selectedPiece.IsBoardPositionValidForMove(boardPosition)) return;
+            }
+            else
+            {
+                Debug.Log("Position - Not Jaguar.");
+                if (!selectedPiece.IsBoardPositionValidForJump(boardPosition) && !selectedPiece.IsBoardPositionValidForMove(boardPosition)) return;
             }
 
-            if (selectedPiece.IsBoardPositionValidForMove(boardPosition))
-            {
-                ApplyPositionMove(boardPosition);
-                return;
-            }
+            Debug.Log("Position - Message Sent.");
+            PlayroomManager.Instance.OnPlayerSelectedPosition(boardPosition.GetCoordinates());
+            isPlayerTurn = false;
+            Invoke(nameof(FinishPlayerTurn), 0.5f);
         }
 
-        private void ApplyPositionMove (BoardPosition boardPosition)
+        private void FinishPlayerTurn()
         {
-            BoardPiece oldPiece = selectedPiece;
-            DeselectPiece();
-            oldPiece.SetBoardPosition(boardPosition);
-            isPlayerTurn = false;
             PlayroomManager.Instance.OnPlayerFinishedTurn();
         }
 
@@ -106,6 +93,23 @@ namespace PlayroomDemo.Networking
         public void SetPlayerTurn (bool isPlayerTurn)
         {
             this.isPlayerTurn = isPlayerTurn;
+        }
+
+        public void SetReceivedMove (BoardPiece selectedPiece, BoardPosition boardPosition)
+        {
+            Debug.Log("MOVE - Piece: " + selectedPiece + " / Position: " + boardPosition);
+            if (selectedPiece.IsJaguar() && selectedPiece.IsBoardPositionValidForJump(boardPosition))
+            {
+                selectedPiece.RemoveJumpedPiece(boardPosition);
+                selectedPiece.SetBoardPosition(boardPosition);
+                return;
+            }
+
+            if (selectedPiece.IsBoardPositionValidForMove(boardPosition))
+            {
+                selectedPiece.SetBoardPosition(boardPosition);
+                return;
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ namespace PlayroomDemo.Board
             transform.position = currentPosition.transform.position;
         }
 
-        public void OnPieceInteraction (bool isSelection)
+        public void OnInteraction (bool isSelection)
         {
             selectionMarker.SetActive(isSelection);
             currentPosition.ShouldMarkAvailableNeighbors(isSelection);
