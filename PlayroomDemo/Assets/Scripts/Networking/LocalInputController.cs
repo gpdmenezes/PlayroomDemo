@@ -71,7 +71,7 @@ namespace PlayroomDemo.Networking
 
             PlayroomManager.Instance.OnPlayerSelectedPosition(boardPosition.GetCoordinates());
             isPlayerTurn = false;
-            Invoke(nameof(FinishPlayerTurn), 0.5f);
+            Invoke(nameof(FinishPlayerTurn), 1f);
         }
 
         private void FinishPlayerTurn()
