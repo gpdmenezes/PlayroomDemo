@@ -6,6 +6,7 @@ namespace PlayroomDemo.UI
     {
         public static InterfaceManager Instance;
 
+        [SerializeField] private Fader fader;
         [SerializeField] private PlayerInterface currentPlayerInterface;
         [SerializeField] private PlayerInterface opponentPlayerInterface;
 
@@ -24,6 +25,11 @@ namespace PlayroomDemo.UI
         {
             Debug.Log("OpponentPlayer: " + playerName + " /isJaguar: " + isJaguar);
             opponentPlayerInterface.SetupInterface(isJaguar, playerName);
+        }
+
+        public void FadeOut ()
+        {
+            fader.FadeOut();
         }
 
         public void SetPlayerTurnText(bool isCurrentPlayerTurn)

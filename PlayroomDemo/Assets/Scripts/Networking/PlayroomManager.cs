@@ -113,6 +113,7 @@ namespace PlayroomDemo.Networking
             bool amIJaguar = (playerRole == jaguarPlayer);
             InterfaceManager.Instance.SetupCurrentPlayerInterface(amIJaguar, playroomKit.MyPlayer().GetProfile().name);
             InterfaceManager.Instance.SetupOpponentPlayerInterface(!amIJaguar, GetOtherPlayerName());
+            InterfaceManager.Instance.FadeOut();
             PlayerController.Instance.SetPlayerJaguar(amIJaguar);
         }
 
