@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 using static Playroom.PlayroomKit;
 using PlayroomDemo.UI;
 using PlayroomDemo.Board;
+using System.ComponentModel;
 
 namespace PlayroomDemo.Networking
 {
@@ -96,12 +97,14 @@ namespace PlayroomDemo.Networking
             winner = "none";
             dogCounter = 0;
 
+            /*
             if (!playroomKit.IsHost()) return;
 
             playroomKit.SetState("winner", "none", true);
             playroomKit.SetState("dogCounter", 0, true);
             playroomKit.SetState("selectedPieceCoordinates", new Vector2(-1, -1), true);
             playroomKit.SetState("selectedPositionCoordinates", new Vector2(-1, -1), true);
+            */
         }
 
         private void SetPlayerRoles ()
@@ -149,7 +152,7 @@ namespace PlayroomDemo.Networking
 
         private void CheckWinnerUpdate (string winner)
         {
-            if (this.winner == winner) return;
+            if (this.winner == winner || winner == "none" || String.IsNullOrEmpty(winner)) return;
             Debug.Log("Winner updated: " + winner);
 
             this.winner = winner;
@@ -160,7 +163,7 @@ namespace PlayroomDemo.Networking
 
         private void CheckDogCounterUpdate (int dogCounter)
         {
-            if (this.dogCounter == dogCounter) return;
+            if (this.dogCounter == dogCounter || dogCounter == 0) return;
             Debug.Log("DogCounter updated: " + dogCounter);
 
             this.dogCounter = dogCounter;
@@ -169,7 +172,7 @@ namespace PlayroomDemo.Networking
 
         private void CheckPlayerTurnUpdate (string playerTurn)
         {
-            if (this.playerTurn == playerTurn) return;
+            if (this.playerTurn == playerTurn || String.IsNullOrEmpty(playerTurn)) return;
             Debug.Log("PlayerTurn updated: " + playerTurn);
 
             this.playerTurn = playerTurn;
@@ -180,7 +183,7 @@ namespace PlayroomDemo.Networking
 
         private void CheckSelectedPieceCoordinatesUpdate (Vector2 selectedPieceCoordinates)
         {
-            if (selectedPieceCoordinates == null || this.selectedPieceCoordinates == selectedPieceCoordinates) return;
+            if (selectedPieceCoordinates == null || this.selectedPieceCoordinates == selectedPieceCoordinates || (selectedPieceCoordinates == Vector2.one * -1)) return;
             Debug.Log("SelectedPieceCoordinates updated: " + selectedPieceCoordinates);
 
             BoardPiece oldPiece = BoardManager.Instance.GetBoardPieceByCoordinate(this.selectedPieceCoordinates);
@@ -193,7 +196,7 @@ namespace PlayroomDemo.Networking
 
         private void CheckSelectedPositionCoordinatesUpdate (Vector2 selectedPositionCoordinates)
         {
-            if (selectedPositionCoordinates == null || this.selectedPositionCoordinates == selectedPositionCoordinates) return;
+            if (selectedPositionCoordinates == null || this.selectedPositionCoordinates == selectedPositionCoordinates || (selectedPositionCoordinates == Vector2.one * -1)) return;
             Debug.Log("SelectedPositionCoordinates updated: " + selectedPositionCoordinates);
 
             this.selectedPositionCoordinates = selectedPositionCoordinates;
@@ -201,6 +204,8 @@ namespace PlayroomDemo.Networking
             BoardPosition selectedPosition = BoardManager.Instance.GetBoardPositionByCoordinate(selectedPositionCoordinates);
             selectedPiece.OnInteraction(false);
             BoardManager.Instance.ApplyMove(selectedPiece, selectedPosition);
+            this.selectedPieceCoordinates = new Vector2(-1, -1);
+            this.selectedPositionCoordinates = new Vector2(-1, -1);
             CheckWinConditions();
         }
 
